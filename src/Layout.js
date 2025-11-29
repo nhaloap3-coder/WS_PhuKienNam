@@ -95,8 +95,11 @@ const Layout = () => {
               Kính mát
             </a>
 
-            {user && user.username === "admin" && (
+            {user && user.role === "admin" && (
               <>
+                <a href="/admin/users" className="nav-link admin-link">
+                  Người dùng
+                </a>
                 <a href="/admin/products" className="nav-link admin-link">
                   Quản lý SP
                 </a>

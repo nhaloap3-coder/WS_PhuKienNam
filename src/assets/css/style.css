@@ -1247,13 +1247,52 @@ body {
 }
 
 /* Order Status */
-.status-select {
+.status-select,
+.role-select {
   padding: 8px 12px;
   border: 2px solid;
   border-radius: 5px;
   font-size: 13px;
   font-weight: bold;
   cursor: pointer;
+}
+
+/* Role badges */
+.role-select.role-admin {
+  border-color: #dc3545;
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.role-select.role-staff {
+  border-color: #17a2b8;
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.role-select.role-customer {
+  border-color: #28a745;
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Status badges */
+.status-select.status-active {
+  border-color: #28a745;
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-select.status-inactive {
+  border-color: #6c757d;
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.status-select.status-banned {
+  border-color: #dc3545;
+  background: #f8d7da;
+  color: #721c24;
 }
 
 .status-pending {

@@ -25,9 +25,13 @@ import AdminProducts from "./page/admin/AdminProducts";
 //@ts-ignore
 import AdminOrders from "./page/admin/AdminOrders";
 //@ts-ignore
+import AdminUsers from "./page/admin/AdminUsers";
+//@ts-ignore
 import AdminOrderDetail from "./page/admin/AdminOrderDetail";
 //@ts-ignore
 import ProtectedRoute from "./ProtectedRoute";
+//@ts-ignore
+import RegisterPage from "./page/RegisterPage";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 export default function App() {
@@ -43,6 +47,7 @@ export default function App() {
           <Route path="thanh-toan" element={<CheckoutPage />} />
 
           <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
           <Route path="logout" element={<LogoutPage />} />
 
           <Route
@@ -50,6 +55,14 @@ export default function App() {
             element={
               <ProtectedRoute roleRequired="admin">
                 <AdminProducts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="admin/users"
+            element={
+              <ProtectedRoute roleRequired="admin">
+                <AdminUsers />
               </ProtectedRoute>
             }
           />
