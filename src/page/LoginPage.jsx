@@ -11,6 +11,18 @@ const LoginPage = () => {
   const [debugInfo, setDebugInfo] = useState("");
   const navigate = useNavigate();
 
+  // Hàm hash SHA-256
+  const hashPassword = async (password) => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
+    return hashHex;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -55,17 +67,19 @@ const LoginPage = () => {
         status: user.status,
       });
 
-      // Bước 2: Kiểm tra password
-      console.log("Bước 2: Kiểm tra password...");
+      // Bước 2: Hash password và kiểm tra
+      console.log("Bước 2: Hash password và kiểm tra...");
       console.log("Password nhập vào:", password);
+
+      const hashedPassword = await hashPassword(password);
+      console.log("Password sau khi hash:", hashedPassword);
       console.log("Password trong DB:", user.password_hash);
 
-      // DEMO: So sánh trực tiếp (trong thực tế cần dùng bcrypt)
-      if (password !== user.password_hash) {
+      if (hashedPassword !== user.password_hash) {
         console.log("❌ Password không khớp!");
         setError("Mật khẩu không đúng!");
         setDebugInfo(
-          `Password không khớp. Nhập: "${password}", DB: "${user.password_hash}"`
+          `Password không khớp.\nHash nhập: "${hashedPassword}"\nHash DB: "${user.password_hash}"`
         );
         setLoading(false);
         return;
@@ -104,7 +118,6 @@ const LoginPage = () => {
 
       if (updateError) {
         console.warn("⚠️ Không cập nhật được last_login:", updateError);
-        // Không chặn đăng nhập, chỉ log warning
       } else {
         console.log("✅ Đã cập nhật last_login");
       }
@@ -150,7 +163,6 @@ const LoginPage = () => {
   const quickLogin = async (demoUsername, demoPassword) => {
     setUsername(demoUsername);
     setPassword(demoPassword);
-    // Trigger form submit
     setTimeout(() => {
       document.getElementById("loginForm").requestSubmit();
     }, 100);
@@ -164,7 +176,6 @@ const LoginPage = () => {
         <h2 className="login-title">Đăng nhập</h2>
         <p className="login-subtitle">Chào mừng bạn quay trở lại</p>
 
-        {/* Hiển thị lỗi */}
         {error && (
           <div
             style={{
@@ -180,7 +191,6 @@ const LoginPage = () => {
           </div>
         )}
 
-        {/* Debug info */}
         {debugInfo && (
           <details
             style={{
@@ -254,98 +264,6 @@ const LoginPage = () => {
 
         <div className="back-home">
           <a href="/">← Quay về trang chủ</a>
-        </div>
-
-        {/* Tài khoản demo với nút quick login */}
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "15px",
-            background: "#e7f3ff",
-            borderRadius: "8px",
-            fontSize: "13px",
-          }}
-        >
-          <strong>🧪 Tài khoản demo - Click để đăng nhập nhanh:</strong>
-          <div
-            style={{
-              marginTop: "10px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => quickLogin("admin", "admin123")}
-              style={{
-                background: "#dc3545",
-                color: "white",
-                border: "none",
-                padding: "8px 12px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontSize: "12px",
-              }}
-            >
-              👤 Admin (admin / admin123)
-            </button>
-            <button
-              type="button"
-              onClick={() => quickLogin("staff01", "staff123")}
-              style={{
-                background: "#17a2b8",
-                color: "white",
-                border: "none",
-                padding: "8px 12px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontSize: "12px",
-              }}
-            >
-              👤 Staff (staff01 / staff123)
-            </button>
-            <button
-              type="button"
-              onClick={() => quickLogin("customer01", "customer123")}
-              style={{
-                background: "#28a745",
-                color: "white",
-                border: "none",
-                padding: "8px 12px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontSize: "12px",
-              }}
-            >
-              👤 Customer (customer01 / customer123)
-            </button>
-          </div>
-
-          <div
-            style={{
-              marginTop: "10px",
-              padding: "10px",
-              background: "#fff",
-              borderRadius: "5px",
-              fontSize: "11px",
-            }}
-          >
-            <strong>⚠️ Quan trọng:</strong>
-            <br />
-            Nếu không đăng nhập được, vui lòng:
-            <ol style={{ marginTop: "5px", paddingLeft: "20px" }}>
-              <li>Mở Console (F12) để xem log chi tiết</li>
-              <li>
-                Kiểm tra bảng <code>users</code> có dữ liệu chưa
-              </li>
-              <li>
-                Chạy SQL:{" "}
-                <code>ALTER TABLE users DISABLE ROW LEVEL SECURITY;</code>
-              </li>
-              <li>Kiểm tra supabaseClient.js có đúng URL và API Key</li>
-            </ol>
-          </div>
         </div>
       </div>
     </div>
